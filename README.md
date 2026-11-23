@@ -1,1 +1,1 @@
-# devils-advocate-ai 
+# devils-advocate-ai
