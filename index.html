@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DEVIL'S ADVOCATE AI</title>
+<style>
+body{margin:0;background:#090d17;color:white;font-family:Arial,sans-serif;padding:18px}
+main{max-width:600px;margin:auto}
+h1{text-align:center;color:#ff5368}
+.card{background:#192131;padding:16px;border-radius:15px;margin:14px 0}
+textarea{width:100%;height:100px;background:#0b1220;color:white;border:1px solid #526078;border-radius:10px;padding:10px;box-sizing:border-box}
+button{padding:12px;border:0;border-radius:9px;background:#ff5368;color:white;font-weight:bold;margin-top:10px}
+.stat{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat div{background:#0b1220;padding:13px;border-radius:10px}
+small{color:#aeb9ca}
+.result{line-height:1.8;overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<main>
+<h1>😈 DEVIL'S ADVOCATE</h1>
+<p style="text-align:center;color:#aeb9ca">ADVANCED DATA ANALYSIS</p>
+
+<div class="card">
+<h3>📥 আগের ফল লিখুন</h3>
+<textarea id="data" placeholder="1.20, 2.50, 1.05, 4.20"></textarea>
+<button onclick="analyze()">ANALYZE DATA</button>
+<button onclick="clearData()" style="background:#39465b">CLEAR ALL</button>
+</div>
+
+<div class="card">
+<h3>📊 AI DATA REPORT</h3>
+<div class="stat">
+<div><small>মোট ফল</small><h2 id="count">0</h2></div>
+<div><small>গড় ফল</small><h2 id="avg">—</h2></div>
+<div><small>মধ্যক</small><h2 id="median">—</h2></div>
+<div><small>সর্বোচ্চ</small><h2 id="max">—</h2></div>
+</div>
+</div>
+
+<div class="card">
+<h3>🧠 ANALYSIS ENGINE</h3>
+<div id="report" class="result">তথ্য দিলে বিশ্লেষণ শুরু হবে।</div>
+</div>
+
+<div class="card">
+<h3>💾 AI MEMORY</h3>
+<div id="memory" class="result">এখনো কোনো তথ্য নেই।</div>
+</div>
+
+<p style="text-align:center;color:#8995a8;font-size:12px">
+DEVIL'S ADVOCATE AI · VERSION 1.0
+</p>
+</main>
+
+<script>
+let history=JSON.parse(localStorage.getItem("devilData")||"[]");
+
+function analyze(){
+let input=document.getElementById("data").value;
+let nums=input.split(/[,;\s]+/).filter(Boolean).map(Number);
+
+if(!nums.length || nums.some(n=>!Number.isFinite(n)||n<1)){
+alert("সঠিক ফল লিখুন");
+return;
+}
+
+history.push(...nums);
+localStorage.setItem("devilData",JSON.stringify(history));
+show();
+document.getElementById("data").value="";
+}
+
+function show(){
+let a=history;
+if(!a.length)return;
+
+let sorted=[...a].sort((x,y)=>x-y);
+let avg=a.reduce((x,y)=>x+y,0)/a.length;
+let mid=Math.floor(a.length/2);
+let median=a.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;
+
+let low=a.filter(x=>x<2).length;
+let medium=a.filter(x=>x>=2&&x<10).length;
+let high=a.filter(x=>x>=10).length;
+
+document.getElementById("count").innerText=a.length;
+document.getElementById("avg").innerText=avg.toFixed(2)+"x";
+document.getElementById("median").innerText=median.toFixed(2)+"x";
+document.getElementById("max").innerText=Math.max(...a).toFixed(2)+"x";
+
+document.getElementById("report").innerHTML=
+"২x-এর নিচে: "+low+" বার<br>"+
+"২x থেকে ১০x: "+medium+" বার<br>"+
+"১০x বা বেশি: "+high+" বার<br>"+
+"সর্বশেষ ৫টি ফল: "+a.slice(-5).map(x=>x.toFixed(2)+"x").join(", ")+"<br><br>"+
+"পরবর্তী Crash ফল অজানা। আগের ফল দিয়ে নির্ভরযোগ্য ভবিষ্যদ্বাণী করা যায় না।";
+
+document.getElementById("memory").innerText=
+"সংরক্ষিত ফল: "+a.length+
+"\nসর্বশেষ তথ্য: "+a[a.length-1]+"x";
+}
+
+function clearData(){
+if(confirm("সব সংরক্ষিত তথ্য মুছে ফেলবেন?")){
+history=[];
+localStorage.removeItem("devilData");
+location.reload();
+}
+}
+
+show();
+</script>
+</body>
+</html>
